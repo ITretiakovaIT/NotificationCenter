@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="24506" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="24504"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="gTV-IL-0wX" customClass="LikeUserCell" customModule="NotificationCenter" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="175" height="274"/>
+            <autoresizingMask key="autoresizingMask"/>
+            <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                <rect key="frame" x="0.0" y="0.0" width="175" height="274"/>
+                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                <subviews>
+                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="d5q-xf-pR1">
+                        <rect key="frame" x="0.0" y="0.0" width="175" height="274"/>
+                    </imageView>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="jzb-PD-ghE" userLabel="User Name Label">
+                        <rect key="frame" x="12" y="245.66666666666666" width="151" height="16.333333333333343"/>
+                        <fontDescription key="fontDescription" name="Helvetica-Bold" family="Helvetica" pointSize="14"/>
+                        <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="kAQ-Jk-fUe">
+                        <rect key="frame" x="119" y="162" width="48" height="48"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="48" id="zgX-YU-X90"/>
+                            <constraint firstAttribute="height" constant="48" id="zig-Na-kdi"/>
+                        </constraints>
+                        <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                        <state key="normal" title="Button" image="likeButton"/>
+                    </button>
+                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="GFs-Ai-R7C">
+                        <rect key="frame" x="119" y="218" width="48" height="48"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="48" id="EMD-ul-URt"/>
+                            <constraint firstAttribute="width" constant="48" id="iuR-kb-T6D"/>
+                        </constraints>
+                        <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                        <state key="normal" title="Button" image="skipButton"/>
+                    </button>
+                </subviews>
+            </view>
+            <viewLayoutGuide key="safeArea" id="ZTg-uK-7eu"/>
+            <constraints>
+                <constraint firstAttribute="trailing" secondItem="d5q-xf-pR1" secondAttribute="trailing" id="0XY-4Z-IWT"/>
+                <constraint firstAttribute="bottom" secondItem="jzb-PD-ghE" secondAttribute="bottom" constant="12" id="1QX-zA-84p"/>
+                <constraint firstAttribute="trailing" secondItem="kAQ-Jk-fUe" secondAttribute="trailing" constant="8" id="N38-F7-mOA"/>
+                <constraint firstAttribute="trailing" secondItem="GFs-Ai-R7C" secondAttribute="trailing" constant="8" id="TNS-tj-A8O"/>
+                <constraint firstAttribute="bottom" secondItem="d5q-xf-pR1" secondAttribute="bottom" id="dln-KR-GpT"/>
+                <constraint firstAttribute="trailing" secondItem="jzb-PD-ghE" secondAttribute="trailing" constant="12" id="dpX-EE-Re3"/>
+                <constraint firstItem="jzb-PD-ghE" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" constant="12" id="gwg-9z-hSK"/>
+                <constraint firstAttribute="bottom" secondItem="GFs-Ai-R7C" secondAttribute="bottom" constant="8" id="hB5-Id-9Om"/>
+                <constraint firstItem="d5q-xf-pR1" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" id="mom-9W-7X7"/>
+                <constraint firstItem="d5q-xf-pR1" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" id="vcW-uW-oYZ"/>
+                <constraint firstItem="GFs-Ai-R7C" firstAttribute="top" secondItem="kAQ-Jk-fUe" secondAttribute="bottom" constant="8" id="xFD-jb-jcx"/>
+            </constraints>
+            <connections>
+                <outlet property="avatarImageView" destination="d5q-xf-pR1" id="q2W-v1-pyA"/>
+                <outlet property="likeButoon" destination="kAQ-Jk-fUe" id="SWB-U9-6lp"/>
+                <outlet property="skipButton" destination="GFs-Ai-R7C" id="DXU-G6-r6Z"/>
+                <outlet property="userNameLabel" destination="jzb-PD-ghE" id="lti-Fw-FT2"/>
+            </connections>
+            <point key="canvasLocation" x="139" y="123"/>
+        </collectionViewCell>
+    </objects>
+    <resources>
+        <image name="likeButton" width="48" height="48"/>
+        <image name="skipButton" width="48" height="48"/>
+    </resources>
+</document>
