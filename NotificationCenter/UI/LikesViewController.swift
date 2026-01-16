@@ -11,6 +11,7 @@ final class LikesViewController: UIViewController, UICollectionViewDelegate {
     
     private let viewModel: LikesViewModel
     
+    @IBOutlet private weak var unblurAllButton: UIButton!
     @IBOutlet private weak var collectionView: UICollectionView!
     
     init(viewModel: LikesViewModel) {
@@ -28,6 +29,13 @@ final class LikesViewController: UIViewController, UICollectionViewDelegate {
         title = "Liked You"
         
         setupCollectionView()
+        collectionView.contentInsetAdjustmentBehavior = .never
+    }
+    
+    @IBAction func unblurAllTapped() {
+        viewModel.unblurAll()
+        unblurAllButton.isHidden = true
+        collectionView.reloadData()
     }
 }
 
@@ -40,13 +48,6 @@ private extension LikesViewController {
             UINib(nibName: LikeUserCell.nibName, bundle: nil),
             forCellWithReuseIdentifier: LikeUserCell.reuseIdentifier
         )
-        
-        collectionView.contentInset = UIEdgeInsets(
-            top: 16,
-            left: 16,
-            bottom: 16,
-            right: 16
-        )
     }
 }
 
@@ -58,20 +59,29 @@ extension LikesViewController: UICollectionViewDelegateFlowLayout {
         sizeForItemAt indexPath: IndexPath
     ) -> CGSize {
 
-        let spacing: CGFloat = 16
+        let spacing: CGFloat = 8
         let totalSpacing = spacing * 3 // left + right + між колонками
         let width = (collectionView.bounds.width - totalSpacing) / 2
         let height = width * 1.4
 
         return CGSize(width: width, height: height)
     }
-
+    
+    func collectionView(
+        _ collectionView: UICollectionView,
+        layout collectionViewLayout: UICollectionViewLayout,
+        insetForSectionAt section: Int
+    ) -> UIEdgeInsets {
+        UIEdgeInsets(top: 8, left: 8, bottom: 8, right: 8)
+    }
+    
+    
     func collectionView(
         _ collectionView: UICollectionView,
         layout collectionViewLayout: UICollectionViewLayout,
         minimumLineSpacingForSectionAt section: Int
     ) -> CGFloat {
-        16
+        8
     }
 
     func collectionView(
@@ -79,7 +89,7 @@ extension LikesViewController: UICollectionViewDelegateFlowLayout {
         layout collectionViewLayout: UICollectionViewLayout,
         minimumInteritemSpacingForSectionAt section: Int
     ) -> CGFloat {
-        16
+        8
     }
 }
 
@@ -97,7 +107,7 @@ extension LikesViewController: UICollectionViewDataSource {
         }
         
         let item = viewModel.item(at: indexPath.item)
-        cell.configure(user: item.user, isBlurred: true)
+        cell.configure(user: item.user, isBlurred: viewModel.shouldBlurItems())
         
         return cell
     }

@@ -17,7 +17,7 @@
                 <rect key="frame" x="0.0" y="0.0" width="175" height="274"/>
                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                 <subviews>
-                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="d5q-xf-pR1">
+                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="avatar3" translatesAutoresizingMaskIntoConstraints="NO" id="d5q-xf-pR1">
                         <rect key="frame" x="0.0" y="0.0" width="175" height="274"/>
                     </imageView>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="jzb-PD-ghE" userLabel="User Name Label">
@@ -44,32 +44,46 @@
                         <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                         <state key="normal" title="Button" image="skipButton"/>
                     </button>
+                    <visualEffectView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Xtz-Cc-465">
+                        <rect key="frame" x="0.0" y="0.0" width="175" height="274"/>
+                        <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="bFM-2D-zxW">
+                            <rect key="frame" x="0.0" y="0.0" width="175" height="274"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        </view>
+                        <blurEffect style="systemUltraThinMaterial"/>
+                    </visualEffectView>
                 </subviews>
             </view>
             <viewLayoutGuide key="safeArea" id="ZTg-uK-7eu"/>
             <constraints>
+                <constraint firstAttribute="trailing" secondItem="Xtz-Cc-465" secondAttribute="trailing" id="084-YB-5BW"/>
                 <constraint firstAttribute="trailing" secondItem="d5q-xf-pR1" secondAttribute="trailing" id="0XY-4Z-IWT"/>
                 <constraint firstAttribute="bottom" secondItem="jzb-PD-ghE" secondAttribute="bottom" constant="12" id="1QX-zA-84p"/>
                 <constraint firstAttribute="trailing" secondItem="kAQ-Jk-fUe" secondAttribute="trailing" constant="8" id="N38-F7-mOA"/>
+                <constraint firstItem="Xtz-Cc-465" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" id="Ps3-Vr-zHr"/>
+                <constraint firstItem="Xtz-Cc-465" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" id="Sbc-OA-zWL"/>
                 <constraint firstAttribute="trailing" secondItem="GFs-Ai-R7C" secondAttribute="trailing" constant="8" id="TNS-tj-A8O"/>
                 <constraint firstAttribute="bottom" secondItem="d5q-xf-pR1" secondAttribute="bottom" id="dln-KR-GpT"/>
                 <constraint firstAttribute="trailing" secondItem="jzb-PD-ghE" secondAttribute="trailing" constant="12" id="dpX-EE-Re3"/>
                 <constraint firstItem="jzb-PD-ghE" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" constant="12" id="gwg-9z-hSK"/>
                 <constraint firstAttribute="bottom" secondItem="GFs-Ai-R7C" secondAttribute="bottom" constant="8" id="hB5-Id-9Om"/>
                 <constraint firstItem="d5q-xf-pR1" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" id="mom-9W-7X7"/>
+                <constraint firstAttribute="bottom" secondItem="Xtz-Cc-465" secondAttribute="bottom" id="nIm-ee-a4w"/>
                 <constraint firstItem="d5q-xf-pR1" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" id="vcW-uW-oYZ"/>
                 <constraint firstItem="GFs-Ai-R7C" firstAttribute="top" secondItem="kAQ-Jk-fUe" secondAttribute="bottom" constant="8" id="xFD-jb-jcx"/>
             </constraints>
             <connections>
                 <outlet property="avatarImageView" destination="d5q-xf-pR1" id="q2W-v1-pyA"/>
+                <outlet property="blurView" destination="Xtz-Cc-465" id="TlR-UR-cea"/>
                 <outlet property="likeButoon" destination="kAQ-Jk-fUe" id="SWB-U9-6lp"/>
                 <outlet property="skipButton" destination="GFs-Ai-R7C" id="DXU-G6-r6Z"/>
                 <outlet property="userNameLabel" destination="jzb-PD-ghE" id="lti-Fw-FT2"/>
             </connections>
-            <point key="canvasLocation" x="139" y="123"/>
+            <point key="canvasLocation" x="138.1679389312977" y="122.53521126760565"/>
         </collectionViewCell>
     </objects>
     <resources>
+        <image name="avatar3" width="175" height="274"/>
         <image name="likeButton" width="48" height="48"/>
         <image name="skipButton" width="48" height="48"/>
     </resources>

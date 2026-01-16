@@ -15,23 +15,22 @@ class LikeUserCell: UICollectionViewCell {
     @IBOutlet weak var likeButoon: UIButton!
     @IBOutlet weak var userNameLabel: UILabel!
     @IBOutlet weak var avatarImageView: UIImageView!
+    @IBOutlet private weak var blurView: UIVisualEffectView!
     
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
     }
     
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        blurView.isHidden = true
+    }
+    
     func configure(user: User, isBlurred: Bool) {
-        // тимчасово
-//        textLabel?.text = user.name
         userNameLabel.text = user.name
-        
-        if
-            let url = user.avatarURL,
-            url.scheme == "asset",
-            let imageName = url.host {
-            avatarImageView.image = UIImage(named: imageName)
-        }
+        blurView.isHidden = !isBlurred
+        avatarImageView.setImage(from: user.avatarURL)
     }
 
 }

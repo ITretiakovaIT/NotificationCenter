@@ -12,6 +12,7 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="LikesViewController" customModule="NotificationCenter" customModuleProvider="target">
             <connections>
                 <outlet property="collectionView" destination="e7d-Zt-tjy" id="0aV-EO-mBc"/>
+                <outlet property="unblurAllButton" destination="KCV-cn-N9v" id="Md4-ot-Wow"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
             </connections>
         </placeholder>
@@ -23,20 +24,33 @@
                 <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="none" translatesAutoresizingMaskIntoConstraints="NO" id="e7d-Zt-tjy">
                     <rect key="frame" x="0.0" y="118" width="393" height="666"/>
                     <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                    <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="y6T-5d-n4x">
+                    <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="0.0" minimumInteritemSpacing="0.0" id="UZD-gK-Ob9">
                         <size key="itemSize" width="128" height="128"/>
                         <size key="headerReferenceSize" width="0.0" height="0.0"/>
                         <size key="footerReferenceSize" width="0.0" height="0.0"/>
                         <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                     </collectionViewFlowLayout>
                 </collectionView>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="KCV-cn-N9v">
+                    <rect key="frame" x="130.66666666666669" y="435" width="131.66666666666669" height="32"/>
+                    <state key="normal" title="Button"/>
+                    <buttonConfiguration key="configuration" style="plain" title="Unblur all likes">
+                        <fontDescription key="titleFontDescription" type="boldSystem" pointSize="15"/>
+                        <color key="baseForegroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    </buttonConfiguration>
+                    <connections>
+                        <action selector="unblurAllTapped" destination="-1" eventType="touchUpInside" id="zgD-Ie-bdG"/>
+                    </connections>
+                </button>
             </subviews>
             <viewLayoutGuide key="safeArea" id="fnl-2z-Ty3"/>
             <color key="backgroundColor" systemColor="systemBackgroundColor"/>
             <constraints>
                 <constraint firstItem="fnl-2z-Ty3" firstAttribute="bottom" secondItem="e7d-Zt-tjy" secondAttribute="bottom" id="54h-WI-DPf"/>
                 <constraint firstItem="e7d-Zt-tjy" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" id="Mut-4L-xg9"/>
+                <constraint firstItem="KCV-cn-N9v" firstAttribute="centerY" secondItem="fnl-2z-Ty3" secondAttribute="centerY" id="hd7-jJ-bir"/>
                 <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="e7d-Zt-tjy" secondAttribute="trailing" id="m0c-KF-KBA"/>
+                <constraint firstItem="KCV-cn-N9v" firstAttribute="centerX" secondItem="fnl-2z-Ty3" secondAttribute="centerX" id="nMT-zp-t98"/>
                 <constraint firstItem="e7d-Zt-tjy" firstAttribute="top" secondItem="fnl-2z-Ty3" secondAttribute="top" id="puZ-gn-xfL"/>
             </constraints>
             <point key="canvasLocation" x="-266.41221374045801" y="153.52112676056339"/>
