@@ -8,52 +8,62 @@
 import Foundation
 
 final class LikesViewModel {
-
-    private(set) var items: [LikeItem] = []
-    private(set) var isUnblurActive: Bool = false
     
-    init() {
-        items = [
-            LikeItem(
-                id: .init(),
-                user: User(id: "1", name: "Alex", avatarURL: URL(string: "asset://avatar1"))
-            ),
-            LikeItem(
-                id: .init(),
-                user: User(id: "2", name: "Max", avatarURL: URL(string: "asset://avatar2"))
-            ),
-            LikeItem(
-                id: .init(),
-                user: User(id: "3", name: "John", avatarURL: URL(string: "asset://avatar3"))
-            ),
-            LikeItem(
-                id: .init(),
-                user: User(id: "4", name: "Alex", avatarURL: URL(string: "asset://avatar4"))
-            ),
-            LikeItem(
-                id: .init(),
-                user: User(id: "5", name: "Max", avatarURL: URL(string: "asset://avatar5"))
-            ),
-            LikeItem(
-                id: .init(),
-                user: User(id: "6", name: "John", avatarURL: URL(string: "asset://avatar6"))
-            )
-        ]
+    private let likesService: LikesService
+    private let timerService: UnblurTimerService
+    
+    private(set) var items: [LikeItem] = []{
+        didSet {
+            onItemsUpdated?()
+        }
     }
-
+    
+    var isBlurred: Bool {
+        !timerService.isActive()
+    }
+    
+    var onItemsUpdated: (() -> Void)?
+    
+    init(timerService: UnblurTimerService, likesService: LikesService) {
+        self.timerService = timerService
+        self.likesService = likesService
+    }
+    
+    
+    func unblurAll() {
+        timerService.activate()
+        // оновити state
+    }
+    
+    func refreshStateIfNeeded() {
+        // викликаємо при появі екрану
+        if !timerService.isActive() {
+            timerService.reset()
+        }
+    }
+    
+    func loadInitial() {
+        Task {
+            do {
+                let result = try await likesService.fetchLikes(page: 1)
+                await MainActor.run {
+                    self.items = result
+                }
+            } catch {
+                print("Erorr fetch items: \(error)")
+            }
+        }
+    }
+    
+    func loadNextPage() {
+        // pagination
+    }
+    
     var numberOfItems: Int {
         items.count
     }
-
+    
     func item(at index: Int) -> LikeItem {
         items[index]
-    }
-    
-    func unblurAll() {
-        isUnblurActive = true
-    }
-    
-    func shouldBlurItems() -> Bool {
-        !isUnblurActive
     }
 }

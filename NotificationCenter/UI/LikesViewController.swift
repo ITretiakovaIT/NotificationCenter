@@ -11,6 +11,8 @@ final class LikesViewController: UIViewController, UICollectionViewDelegate {
     
     private let viewModel: LikesViewModel
     
+    private var refreshTimer: Timer?
+    
     @IBOutlet private weak var unblurAllButton: UIButton!
     @IBOutlet private weak var collectionView: UICollectionView!
     
@@ -30,6 +32,26 @@ final class LikesViewController: UIViewController, UICollectionViewDelegate {
         
         setupCollectionView()
         collectionView.contentInsetAdjustmentBehavior = .never
+        
+        viewModel.onItemsUpdated = { [weak self] in
+            self?.collectionView.reloadData()
+        }
+        
+        viewModel.loadInitial()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        viewModel.refreshStateIfNeeded()
+        collectionView.reloadData()
+
+        startRefreshTimerIfNeeded()
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        stopRefreshTimer()
     }
     
     @IBAction func unblurAllTapped() {
@@ -39,6 +61,31 @@ final class LikesViewController: UIViewController, UICollectionViewDelegate {
     }
 }
 
+// MARK: Timer
+private extension LikesViewController {
+    func startRefreshTimerIfNeeded() {
+        guard viewModel.isBlurred else { return }
+
+        refreshTimer = Timer.scheduledTimer(
+            withTimeInterval: 1,
+            repeats: true
+        ) { [weak self] _ in
+            guard let self else { return }
+
+            if !self.viewModel.isBlurred {
+                self.stopRefreshTimer()
+                self.collectionView.reloadData()
+            }
+        }
+    }
+    
+    private func stopRefreshTimer() {
+        refreshTimer?.invalidate()
+        refreshTimer = nil
+    }
+}
+
+// MARK: Collection View setup
 private extension LikesViewController {
     func setupCollectionView() {
         collectionView.dataSource = self
@@ -51,8 +98,8 @@ private extension LikesViewController {
     }
 }
 
+// MARK: Collection View Flow Layout
 extension LikesViewController: UICollectionViewDelegateFlowLayout {
-
     func collectionView(
         _ collectionView: UICollectionView,
         layout collectionViewLayout: UICollectionViewLayout,
@@ -93,6 +140,7 @@ extension LikesViewController: UICollectionViewDelegateFlowLayout {
     }
 }
 
+// MARK: Collection View Data Source
 extension LikesViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         viewModel.numberOfItems
@@ -107,7 +155,7 @@ extension LikesViewController: UICollectionViewDataSource {
         }
         
         let item = viewModel.item(at: indexPath.item)
-        cell.configure(user: item.user, isBlurred: viewModel.shouldBlurItems())
+        cell.configure(user: item.user, isBlurred: viewModel.isBlurred)
         
         return cell
     }

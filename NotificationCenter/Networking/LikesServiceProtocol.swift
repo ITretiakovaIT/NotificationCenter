@@ -6,3 +6,7 @@
 //
 
 import Foundation
+
+protocol LikesService {
+    func fetchLikes(page: Int) async throws -> [LikeItem]
+}

@@ -10,7 +10,9 @@ import UIKit
 final class LikesCoordinator {
 
     func start() -> UIViewController {
-        let viewModel = LikesViewModel()
+        let timerService = UnblurTimerService()
+        let apiService = MockLikesService()
+        let viewModel = LikesViewModel(timerService: timerService, likesService: apiService)
         let viewController = LikesViewController(viewModel: viewModel)
         return viewController
     }
