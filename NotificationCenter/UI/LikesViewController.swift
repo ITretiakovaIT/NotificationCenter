@@ -11,8 +11,6 @@ final class LikesViewController: UIViewController, UICollectionViewDelegate {
     
     private let viewModel: LikesViewModel
     
-    private var refreshTimer: Timer?
-    
     @IBOutlet private weak var unblurAllButton: UIButton!
     @IBOutlet private weak var collectionView: UICollectionView!
     
@@ -33,55 +31,53 @@ final class LikesViewController: UIViewController, UICollectionViewDelegate {
         setupCollectionView()
         collectionView.contentInsetAdjustmentBehavior = .never
         
-        viewModel.onItemsUpdated = { [weak self] in
-            self?.collectionView.reloadData()
-        }
+        bindViewModel()
+        viewModel.onViewDidLoad()
         
-        viewModel.loadInitial()
+        syncBlurState()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        viewModel.refreshStateIfNeeded()
-        collectionView.reloadData()
-
-        startRefreshTimerIfNeeded()
-    }
-    
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        stopRefreshTimer()
+        viewModel.onViewWillAppear()
+        syncBlurState()
     }
     
     @IBAction func unblurAllTapped() {
         viewModel.unblurAll()
-        unblurAllButton.isHidden = true
+        syncBlurState()
+    }
+}
+
+private extension LikesViewController {
+    func syncBlurState() {
+        unblurAllButton.isHidden = viewModel.isUnblurActive
         collectionView.reloadData()
     }
 }
 
-// MARK: Timer
+// MARK: Binding
 private extension LikesViewController {
-    func startRefreshTimerIfNeeded() {
-        guard viewModel.isBlurred else { return }
-
-        refreshTimer = Timer.scheduledTimer(
-            withTimeInterval: 1,
-            repeats: true
-        ) { [weak self] _ in
-            guard let self else { return }
-
-            if !self.viewModel.isBlurred {
-                self.stopRefreshTimer()
-                self.collectionView.reloadData()
+    func bindViewModel() {
+        viewModel.onItemsUpdated = { [weak self] in
+            runOnMain {
+                self?.syncBlurState()
             }
         }
-    }
-    
-    private func stopRefreshTimer() {
-        refreshTimer?.invalidate()
-        refreshTimer = nil
+        
+        viewModel.onTimerTick = { [weak self] remainingTime in
+            runOnMain {
+                // update timer label
+                print(remainingTime)
+            }
+        }
+        
+        viewModel.onTimerFinished = { [weak self] in
+            runOnMain {
+                self?.syncBlurState()
+            }
+        }
     }
 }
 
@@ -155,7 +151,7 @@ extension LikesViewController: UICollectionViewDataSource {
         }
         
         let item = viewModel.item(at: indexPath.item)
-        cell.configure(user: item.user, isBlurred: viewModel.isBlurred)
+        cell.configure(user: item.user, isBlurred: !viewModel.isUnblurActive)
         
         return cell
     }
