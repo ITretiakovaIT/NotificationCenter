@@ -12,6 +12,8 @@ final class LikesViewController: UIViewController, UICollectionViewDelegate {
     private let viewModel: LikesViewModel
     
     @IBOutlet private weak var unblurAllButton: UIButton!
+    @IBOutlet private weak var removeRandomButton: UIButton!
+    @IBOutlet private weak var insertRandomButton: UIButton!
     @IBOutlet private weak var collectionView: UICollectionView!
     
     init(viewModel: LikesViewModel) {
@@ -35,6 +37,7 @@ final class LikesViewController: UIViewController, UICollectionViewDelegate {
         viewModel.onViewDidLoad()
         
         syncBlurState()
+        checkDebugState()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -48,12 +51,27 @@ final class LikesViewController: UIViewController, UICollectionViewDelegate {
         viewModel.unblurAll()
         syncBlurState()
     }
+    
+    @IBAction func insertRandomTapped() {
+        viewModel.insertRandom()
+    }
+    
+    @IBAction func removeRandomTapped() {
+        viewModel.removeRandom()
+    }
 }
 
+// MARK: UI Helpers
 private extension LikesViewController {
     func syncBlurState() {
         unblurAllButton.isHidden = viewModel.isUnblurActive
         collectionView.reloadData()
+    }
+    
+    func checkDebugState() {
+        let isHidden = !viewModel.canSimulateUpdates
+        removeRandomButton.isHidden = isHidden
+        insertRandomButton.isHidden = isHidden
     }
 }
 

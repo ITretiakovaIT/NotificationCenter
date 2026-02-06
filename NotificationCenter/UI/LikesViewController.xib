@@ -12,6 +12,8 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="LikesViewController" customModule="NotificationCenter" customModuleProvider="target">
             <connections>
                 <outlet property="collectionView" destination="e7d-Zt-tjy" id="0aV-EO-mBc"/>
+                <outlet property="insertRandomButton" destination="Y6B-md-3FM" id="HIH-1H-ubd"/>
+                <outlet property="removeRandomButton" destination="giZ-VN-GUf" id="pDB-R1-lZI"/>
                 <outlet property="unblurAllButton" destination="KCV-cn-N9v" id="Md4-ot-Wow"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
             </connections>
@@ -22,7 +24,7 @@
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="none" translatesAutoresizingMaskIntoConstraints="NO" id="e7d-Zt-tjy">
-                    <rect key="frame" x="0.0" y="118" width="393" height="666"/>
+                    <rect key="frame" x="0.0" y="118" width="393" height="606"/>
                     <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                     <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="0.0" minimumInteritemSpacing="0.0" id="UZD-gK-Ob9">
                         <size key="itemSize" width="128" height="128"/>
@@ -42,12 +44,45 @@
                         <action selector="unblurAllTapped" destination="-1" eventType="touchUpInside" id="zgD-Ie-bdG"/>
                     </connections>
                 </button>
+                <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="vYq-nm-df2">
+                    <rect key="frame" x="0.0" y="724" width="393" height="60"/>
+                    <subviews>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Y6B-md-3FM">
+                            <rect key="frame" x="0.0" y="0.0" width="196.66666666666666" height="60"/>
+                            <state key="normal" title="Button"/>
+                            <buttonConfiguration key="configuration" style="plain" title="Insert random like">
+                                <fontDescription key="titleFontDescription" type="system" weight="semibold" pointSize="16"/>
+                                <color key="baseForegroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            </buttonConfiguration>
+                            <connections>
+                                <action selector="insertRandomTapped" destination="-1" eventType="touchUpInside" id="8Xm-eD-QQj"/>
+                            </connections>
+                        </button>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="giZ-VN-GUf">
+                            <rect key="frame" x="196.66666666666663" y="0.0" width="196.33333333333337" height="60"/>
+                            <state key="normal" title="Button"/>
+                            <buttonConfiguration key="configuration" style="plain" title="Remove random like">
+                                <fontDescription key="titleFontDescription" type="system" weight="semibold" pointSize="16"/>
+                                <color key="baseForegroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            </buttonConfiguration>
+                            <connections>
+                                <action selector="removeRandomTapped" destination="-1" eventType="touchUpInside" id="ZYf-LU-S07"/>
+                            </connections>
+                        </button>
+                    </subviews>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="60" id="J8a-7H-ouE"/>
+                    </constraints>
+                </stackView>
             </subviews>
             <viewLayoutGuide key="safeArea" id="fnl-2z-Ty3"/>
             <color key="backgroundColor" systemColor="systemBackgroundColor"/>
             <constraints>
-                <constraint firstItem="fnl-2z-Ty3" firstAttribute="bottom" secondItem="e7d-Zt-tjy" secondAttribute="bottom" id="54h-WI-DPf"/>
+                <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="vYq-nm-df2" secondAttribute="trailing" id="5Zx-6b-hE5"/>
+                <constraint firstItem="vYq-nm-df2" firstAttribute="top" secondItem="e7d-Zt-tjy" secondAttribute="bottom" id="MnK-kW-5AZ"/>
                 <constraint firstItem="e7d-Zt-tjy" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" id="Mut-4L-xg9"/>
+                <constraint firstItem="vYq-nm-df2" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" id="av0-2x-zeR"/>
+                <constraint firstItem="fnl-2z-Ty3" firstAttribute="bottom" secondItem="vYq-nm-df2" secondAttribute="bottom" id="dVI-nO-Sdp"/>
                 <constraint firstItem="KCV-cn-N9v" firstAttribute="centerY" secondItem="fnl-2z-Ty3" secondAttribute="centerY" id="hd7-jJ-bir"/>
                 <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="e7d-Zt-tjy" secondAttribute="trailing" id="m0c-KF-KBA"/>
                 <constraint firstItem="KCV-cn-N9v" firstAttribute="centerX" secondItem="fnl-2z-Ty3" secondAttribute="centerX" id="nMT-zp-t98"/>

@@ -7,11 +7,11 @@
 
 import Foundation
 
-final class MockLikesService: LikesService {
+final class MockLikesService: LikesService, LikesDebugService {
     
     var onUpdate: ((LikesUpdate) -> Void)?
     
-    private let pageSize = 10
+    private let pageSize = 5
     
     private var allItems: [LikeItem] = []
     
@@ -43,8 +43,18 @@ final class MockLikesService: LikesService {
     
     // MARK: - Real-time simulation
     
-    func simulateInsert(_ item: LikeItem) {
-        // знаходимо позицію за createdAt
+    func simulateInsert() {
+        let createdAt: Date
+        
+        if Bool.random() {
+            createdAt = Date() // new item → top
+        } else {
+            createdAt = Date().addingTimeInterval(-TimeInterval(Int.random(in: 60...300)))
+            // older item → middle / bottom
+        }
+        
+        let item = LikeItem.random(createdAt: createdAt)
+        
         let index = allItems.firstIndex {
             $0.createdAt < item.createdAt
         } ?? allItems.count
@@ -64,16 +74,20 @@ final class MockLikesService: LikesService {
 private extension MockLikesService {
     
     private func seed() {
-        allItems = (1...35).map {
-            LikeItem(
-                id: "\($0)",
-                user: User(id: "\($0)",
-                           name: ["Alex", "Max", "John", "Luka", "Kurt", "James"].randomElement()!,
-                           avatarURL: URL(string: "asset://avatar\(["1", "2", "3", "4", "5", "6"].randomElement()!)")),
-                createdAt: Date()
-            )
+        let now = Date()
+        
+        allItems = (1...12).map {
+            LikeItem.random(createdAt: now.addingTimeInterval(-TimeInterval($0) * 60))
         }
 
         allItems.sort { $0.createdAt > $1.createdAt }
+    }
+    
+    func makeRandomItem() -> LikeItem {
+        LikeItem(
+            id: UUID().uuidString,
+            user: User.random(),
+            createdAt: Date()
+        )
     }
 }

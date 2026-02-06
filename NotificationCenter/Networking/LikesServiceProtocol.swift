@@ -26,3 +26,8 @@ protocol LikesService {
 
     var onUpdate: ((LikesUpdate) -> Void)? { get set }
 }
+
+protocol LikesDebugService {
+    func simulateInsert()
+    func simulateRemove(id: String)
+}
