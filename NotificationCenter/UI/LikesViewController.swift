@@ -14,6 +14,7 @@ final class LikesViewController: UIViewController, UICollectionViewDelegate {
     @IBOutlet private weak var unblurAllButton: UIButton!
     @IBOutlet private weak var removeRandomButton: UIButton!
     @IBOutlet private weak var insertRandomButton: UIButton!
+    @IBOutlet weak var timerLabel: UILabel!
     @IBOutlet private weak var collectionView: UICollectionView!
     
     init(viewModel: LikesViewModel) {
@@ -86,8 +87,7 @@ private extension LikesViewController {
         
         viewModel.onTimerTick = { [weak self] remainingTime in
             runOnMain {
-                // update timer label
-                print(remainingTime)
+                self?.timerLabel.text = remainingTime.toMinuteSecondString
             }
         }
         
