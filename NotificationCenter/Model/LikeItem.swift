@@ -7,7 +7,8 @@
 
 import Foundation
 
-struct LikeItem {
-    let id: UUID
+struct LikeItem: Identifiable, Equatable {
+    let id: String
     let user: User
+    let createdAt: Date
 }

@@ -9,13 +9,20 @@ import Foundation
 
 final class LikesViewModel {
     
-    private let likesService: LikesService
+    private var likesService: LikesService
     private let timerService: UnblurTimerService
+    
+    private var nextCursor: LikesCursor?
+    private var isLoadingItems = false
     
     private(set) var items: [LikeItem] = []{
         didSet {
             onItemsUpdated?()
         }
+    }
+    
+    var numberOfItems: Int {
+        items.count
     }
     
     var isUnblurActive: Bool {
@@ -31,10 +38,11 @@ final class LikesViewModel {
         self.likesService = likesService
         
         bindTimer()
+        bindUpdates()
     }
     
     func onViewDidLoad() {
-        loadInitial()
+        loadNext()
         timerService.resumeIfNeeded()
     }
     
@@ -46,12 +54,21 @@ final class LikesViewModel {
         timerService.start(duration: 15)
     }
     
-    func loadNextPage() {
-        // pagination
-    }
-    
-    var numberOfItems: Int {
-        items.count
+    func loadNext() {
+        guard !isLoadingItems else { return }
+        isLoadingItems = true
+        
+        Task {
+            let page = try await likesService.fetchLikes(
+                after: nextCursor
+            )
+            
+            await MainActor.run {
+                items.append(contentsOf: page.items)
+                nextCursor = page.nextCursor
+                isLoadingItems = false
+            }
+        }
     }
     
     func item(at index: Int) -> LikeItem {
@@ -60,18 +77,6 @@ final class LikesViewModel {
 }
 
 private extension LikesViewModel {
-    func loadInitial() {
-        Task {
-            do {
-                let result = try await likesService.fetchLikes(page: 1)
-                await MainActor.run {
-                    self.items = result
-                }
-            } catch {
-                print("Erorr fetch items: \(error)")
-            }
-        }
-    }
     
     func bindTimer() {
         timerService.onTick = { [weak self] time in
@@ -80,6 +85,24 @@ private extension LikesViewModel {
         
         timerService.onFinished = { [weak self] in
             self?.onTimerFinished?()
+        }
+    }
+    
+    func bindUpdates() {
+        likesService.onUpdate = { [weak self] update in
+            guard let self else { return }
+            
+            switch update {
+            case .inserted(let item, let index):
+                guard let nextCursor, item.createdAt > nextCursor else {
+                    return
+                }
+                
+                self.items.insert(item, at: min(index, self.items.count))
+                
+            case .removed(let id):
+                self.items.removeAll { $0.id == id }
+            }
         }
     }
 }

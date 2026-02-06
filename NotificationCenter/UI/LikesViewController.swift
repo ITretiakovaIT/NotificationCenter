@@ -156,3 +156,15 @@ extension LikesViewController: UICollectionViewDataSource {
         return cell
     }
 }
+
+extension LikesViewController {
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        let offset = scrollView.contentOffset.y
+        let contentHeight = scrollView.contentSize.height
+        let height = scrollView.frame.height
+
+        if offset > contentHeight - height * 1.5 {
+            viewModel.loadNext()
+        }
+    }
+}
