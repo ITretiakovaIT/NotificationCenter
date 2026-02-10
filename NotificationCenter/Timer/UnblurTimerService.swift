@@ -1,57 +1,64 @@
-//
-//  UnblurTimerService.swift
-//  NotificationCenter
-//
-//  Created by Ira Tretiakova on 14.01.2026.
-//
-
 import Foundation
 
 final class UnblurTimerService {
     
+    // MARK: - Persistence
+    
     private let defaults = UserDefaults.standard
     private let endDateKey = "unblurEndDate"
     
-    private var timer: Timer?
+    // MARK: - Timer
+    
+    private var timer: DispatchSourceTimer?
+    private let timerQueue = DispatchQueue(label: "unblur.timer.queue")
+    
+    // MARK: - Callbacks
     
     var onTick: ((TimeInterval) -> Void)?
     var onFinished: (() -> Void)?
+    
+    // MARK: - State
     
     var remainingTime: TimeInterval {
         max(0, endDate.timeIntervalSinceNow)
     }
     
     var isActive: Bool {
-        remainingTime>0
+        remainingTime > 0
     }
+    
+    // MARK: - Public API
     
     func start(duration: TimeInterval) {
         endDate = Date().addingTimeInterval(duration)
-        startTimer()
+        startTimerIfNeeded()
+        notifyTick()
     }
     
     func resumeIfNeeded() {
         if remainingTime > 0 {
-            startTimer()
+            startTimerIfNeeded()
+            notifyTick()
         } else {
-            stop()
-            onFinished?()
-            reset()
+            finish()
         }
     }
     
     func stop() {
-        timer?.invalidate()
-        timer = nil
+        cancelTimer()
     }
     
     func reset() {
-        UserDefaults.standard.removeObject(forKey: endDateKey)
+        cancelTimer()
+        clearEndDate()
     }
 }
 
+// MARK: - Private
+    
 private extension UnblurTimerService {
-    private var endDate: Date {
+    
+    var endDate: Date {
         get {
             defaults.object(forKey: endDateKey) as? Date ?? .distantPast
         }
@@ -59,26 +66,52 @@ private extension UnblurTimerService {
             defaults.set(newValue, forKey: endDateKey)
         }
     }
-
-    private func startTimer() {
-        stop()
-
-        timer = Timer.scheduledTimer(
-            withTimeInterval: 1,
-            repeats: true
-        ) { [weak self] _ in
+    
+    func startTimerIfNeeded() {
+        guard timer == nil else { return }
+        
+        let timer = DispatchSource.makeTimerSource(queue: timerQueue)
+        timer.schedule(deadline: .now(), repeating: 1)
+        
+        timer.setEventHandler { [weak self] in
             self?.tick()
         }
+        
+        timer.resume()
+        self.timer = timer
     }
-
-    private func tick() {
+    
+    func cancelTimer() {
+        timer?.cancel()
+        timer = nil
+    }
+    
+    func tick() {
         let remaining = remainingTime
 
         if remaining <= 0 {
-            stop()
-            onFinished?()
+            DispatchQueue.runOnMain { [weak self] in
+                self?.finish()
+            }
         } else {
-            onTick?(remaining)
+            DispatchQueue.runOnMain { [weak self] in
+                self?.onTick?(remaining)
+            }
         }
+    }
+    
+    func notifyTick() {
+        let remaining = remainingTime
+        onTick?(remaining)
+    }
+
+    func finish() {
+        cancelTimer()
+        clearEndDate()
+        onFinished?()
+    }
+
+    func clearEndDate() {
+        defaults.removeObject(forKey: endDateKey)
     }
 }

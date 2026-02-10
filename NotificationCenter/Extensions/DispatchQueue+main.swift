@@ -7,8 +7,8 @@
 
 import Foundation
 
-func runOnMain(_ block: @escaping ()->()) {
-    DispatchQueue.main.async {
-        block()
+extension DispatchQueue {
+    static func runOnMain(_ block: @escaping ()->()) {
+        DispatchQueue.main.async(execute: block)
     }
 }

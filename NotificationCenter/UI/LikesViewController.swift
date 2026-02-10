@@ -80,19 +80,19 @@ private extension LikesViewController {
 private extension LikesViewController {
     func bindViewModel() {
         viewModel.onItemsUpdated = { [weak self] in
-            runOnMain {
+            DispatchQueue.runOnMain {
                 self?.syncBlurState()
             }
         }
         
         viewModel.onTimerTick = { [weak self] remainingTime in
-            runOnMain {
+            DispatchQueue.runOnMain {
                 self?.timerLabel.text = remainingTime.toMinuteSecondString
             }
         }
         
         viewModel.onTimerFinished = { [weak self] in
-            runOnMain {
+            DispatchQueue.runOnMain {
                 self?.syncBlurState()
             }
         }
