@@ -15,6 +15,8 @@ final class MockLikesService: LikesService, LikesDebugService {
     
     private var allItems: [LikeItem] = []
     
+    private let factory = LikeItemFactory()
+    
     init() {
         seed()
     }
@@ -44,28 +46,34 @@ final class MockLikesService: LikesService, LikesDebugService {
     // MARK: - Real-time simulation
     
     func simulateInsert() {
-        let createdAt: Date
+        guard !allItems.isEmpty else { return }
         
-        if Bool.random() {
-            createdAt = Date() // new item → top
-        } else {
-            createdAt = Date().addingTimeInterval(-TimeInterval(Int.random(in: 60...300)))
-            // older item → middle / bottom
-        }
+        // Pick a random existing item and insert relative to it
+        let referenceIndex = Int.random(in: 0..<allItems.count)
+        let referenceItem = allItems[referenceIndex]
         
-        let item = LikeItem.random(createdAt: createdAt)
+        // Create a new item slightly newer than the reference one
+        let createdAt = referenceItem.createdAt.addingTimeInterval(30)
+        
+        let item = factory.make(createdAt: createdAt)
         
         let index = allItems.firstIndex {
             $0.createdAt < item.createdAt
         } ?? allItems.count
 
         allItems.insert(item, at: index)
+        
+        print("INSERT:", item.user.name, "at index:", index)
+        
         onUpdate?(.inserted(item, at: index))
     }
     
     func simulateRemove(id: String) {
         guard let index = allItems.firstIndex(where: { $0.id == id }) else { return }
-        allItems.remove(at: index)
+        let item = allItems.remove(at: index)
+        
+        print("REMOVE:", item.user.name, "from index:", index)
+        
         onUpdate?(.removed(id: id))
     }
 }
@@ -77,17 +85,9 @@ private extension MockLikesService {
         let now = Date()
         
         allItems = (1...12).map {
-            LikeItem.random(createdAt: now.addingTimeInterval(-TimeInterval($0) * 60))
+            factory.make(createdAt: now.addingTimeInterval(-TimeInterval($0) * 60))
         }
 
         allItems.sort { $0.createdAt > $1.createdAt }
-    }
-    
-    func makeRandomItem() -> LikeItem {
-        LikeItem(
-            id: UUID().uuidString,
-            user: User.random(),
-            createdAt: Date()
-        )
     }
 }

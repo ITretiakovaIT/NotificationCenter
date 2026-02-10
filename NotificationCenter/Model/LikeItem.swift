@@ -12,14 +12,3 @@ struct LikeItem: Identifiable, Equatable {
     let user: User
     let createdAt: Date
 }
-
-extension LikeItem {
-
-    static func random(createdAt: Date = Date()) -> LikeItem {
-        LikeItem(
-            id: UUID().uuidString,
-            user: User.random(),
-            createdAt: createdAt
-        )
-    }
-}
