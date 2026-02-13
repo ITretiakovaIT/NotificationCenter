@@ -59,7 +59,7 @@ final class LikesViewModel {
     }
     
     func unblurAll() {
-        timerService.start(duration: 30)
+        timerService.start(duration: 120)
     }
     
     func loadNext() {
