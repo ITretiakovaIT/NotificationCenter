@@ -38,6 +38,7 @@ final class LikesViewModel {
     var onItemsUpdated: (() -> Void)?
     var onTimerTick: ((TimeInterval) -> Void)?
     var onTimerFinished: (() -> Void)?
+    var onMatch: ((LikeItem) -> Void)?
     
     init(timerService: UnblurTimerService, likesService: LikesService) {
         self.timerService = timerService
@@ -58,7 +59,7 @@ final class LikesViewModel {
     }
     
     func unblurAll() {
-        timerService.start(duration: 15)
+        timerService.start(duration: 30)
     }
     
     func loadNext() {
@@ -71,9 +72,9 @@ final class LikesViewModel {
                 after: nextCursor
             )
             
-            print("FETCH after:", nextCursor as Any)
-            print("RECEIVED:", page.items.map { $0.createdAt.toHourMinuteString() })
-            print("NEXT CURSOR:", page.nextCursor as Any)
+            print("FETCH after:", nextCursor?.toHourMinuteString() ?? "")
+            print("RECEIVED:", page.items.map { ($0.user.name, $0.createdAt.toHourMinuteString()) })
+            print("NEXT CURSOR:", page.nextCursor?.toHourMinuteString() ?? "")
             
             await MainActor.run {
                 items.append(contentsOf: page.items)
@@ -92,16 +93,25 @@ final class LikesViewModel {
         items[index]
     }
     
+    func item(by id: String) -> LikeItem {
+        items.first { $0.id == id }!
+    }
+    
     func insertRandom() {
         debugService?.simulateInsert()
     }
 
     func removeRandom() {
-        guard let item = items.randomElement() else { return }
-        
-        debugService?.simulateRemove(id: item.id)
+        debugService?.simulateRemove()
     }
 
+    func skip(item: LikeItem) {
+        likesService.skip(id: item.id)
+    }
+
+    func like(item: LikeItem) {
+        likesService.like(id: item.id)
+    }
 }
 
 private extension LikesViewModel {
@@ -136,6 +146,8 @@ private extension LikesViewModel {
                 
             case .removed(let id):
                 self.items.removeAll { $0.id == id }
+            case .matched(let item):
+                onMatch?(item)
             }
         }
     }

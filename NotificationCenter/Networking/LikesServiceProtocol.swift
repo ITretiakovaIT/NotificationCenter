@@ -15,19 +15,21 @@ struct LikesPage {
 enum LikesUpdate {
     case inserted(LikeItem, at: Int)
     case removed(id: String)
+    case matched(LikeItem)
 }
 
 typealias LikesCursor = Date
 
 protocol LikesService {
-    func fetchLikes(
-        after cursor: LikesCursor?
-    ) async throws -> LikesPage
+    func fetchLikes(after cursor: LikesCursor?) async throws -> LikesPage
 
+    func skip(id: String)
+    func like(id: String)
+    
     var onUpdate: ((LikesUpdate) -> Void)? { get set }
 }
 
 protocol LikesDebugService {
     func simulateInsert()
-    func simulateRemove(id: String)
+    func simulateRemove()
 }

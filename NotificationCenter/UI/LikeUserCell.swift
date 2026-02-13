@@ -17,6 +17,11 @@ class LikeUserCell: UICollectionViewCell {
     @IBOutlet weak var avatarImageView: UIImageView!
     @IBOutlet private weak var blurView: UIVisualEffectView!
     
+    private var isBlurred: Bool = true
+    
+    var onLikeTapped: (() -> Void)?
+    var onSkipTapped: (() -> Void)?
+    
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
@@ -25,12 +30,27 @@ class LikeUserCell: UICollectionViewCell {
     override func prepareForReuse() {
         super.prepareForReuse()
         blurView.isHidden = true
+        onLikeTapped = nil
+        onSkipTapped = nil
+    }
+    
+    @IBAction func likeTapped(_ sender: Any) {
+        onLikeTapped?()
+    }
+    
+    @IBAction func skipTapped(_ sender: Any) {
+        onSkipTapped?()
     }
     
     func configure(user: User, isBlurred: Bool) {
         userNameLabel.text = user.name
-        blurView.isHidden = !isBlurred
+        setBlurred(isBlurred)
         avatarImageView.setImage(from: user.avatarURL)
     }
 
+    func setBlurred(_ blurred: Bool) {
+        guard isBlurred != blurred else { return }
+        isBlurred = blurred
+        blurView.isHidden = !isBlurred
+    }
 }

@@ -46,15 +46,17 @@ final class MockLikesService: LikesService, LikesDebugService {
     // MARK: - Real-time simulation
     
     func simulateInsert() {
-        guard !allItems.isEmpty else { return }
+        var createdAt = Date()
         
-        // Pick a random existing item and insert relative to it
-        let referenceIndex = Int.random(in: 0..<allItems.count)
-        let referenceItem = allItems[referenceIndex]
-        
-        // Create a new item slightly newer than the reference one
-        let createdAt = referenceItem.createdAt.addingTimeInterval(30)
-        
+        if !allItems.isEmpty {
+            // Pick a random existing item and insert relative to it
+            let referenceIndex = Int.random(in: 0..<allItems.count)
+            let referenceItem = allItems[referenceIndex]
+            
+            // Create a new item slightly newer than the reference one
+            createdAt = referenceItem.createdAt.addingTimeInterval(30)
+        }
+            
         let item = factory.make(createdAt: createdAt)
         
         let index = allItems.firstIndex {
@@ -68,13 +70,36 @@ final class MockLikesService: LikesService, LikesDebugService {
         onUpdate?(.inserted(item, at: index))
     }
     
-    func simulateRemove(id: String) {
-        guard let index = allItems.firstIndex(where: { $0.id == id }) else { return }
+    func simulateRemove() {
+        guard !allItems.isEmpty else { return }
+        
+        let index = Int.random(in: 0..<allItems.count)
         let item = allItems.remove(at: index)
         
         print("REMOVE:", item.user.name, "from index:", index)
         
-        onUpdate?(.removed(id: id))
+        onUpdate?(.removed(id: item.id))
+    }
+    
+    func skip(id: String) {
+        guard let index = allItems.firstIndex(where: { $0.id == id }) else { return }
+
+        let item = allItems.remove(at: index)
+
+        print("SKIP:", item.user.name)
+
+        onUpdate?(.removed(id: item.id))
+    }
+
+    func like(id: String) {
+        guard let index = allItems.firstIndex(where: { $0.id == id }) else { return }
+
+        let item = allItems.remove(at: index)
+
+        print("LIKE:", item.user.name, "→ MATCH")
+
+        onUpdate?(.removed(id: item.id))
+        onUpdate?(.matched(item))
     }
 }
 

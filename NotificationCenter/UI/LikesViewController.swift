@@ -11,6 +11,9 @@ final class LikesViewController: UIViewController, UICollectionViewDelegate {
     
     private let viewModel: LikesViewModel
     
+    private var dataSource: UICollectionViewDiffableDataSource<Int, String>!
+    private var cellRegistration: UICollectionView.CellRegistration<LikeUserCell, String>!
+    
     @IBOutlet private weak var unblurAllButton: UIButton!
     @IBOutlet private weak var removeRandomButton: UIButton!
     @IBOutlet private weak var insertRandomButton: UIButton!
@@ -32,6 +35,8 @@ final class LikesViewController: UIViewController, UICollectionViewDelegate {
         title = "Liked You"
         
         setupCollectionView()
+        setupDataSource()
+        registerCell()
         collectionView.contentInsetAdjustmentBehavior = .never
         
         bindViewModel()
@@ -66,13 +71,21 @@ final class LikesViewController: UIViewController, UICollectionViewDelegate {
 private extension LikesViewController {
     func syncBlurState() {
         unblurAllButton.isHidden = viewModel.isUnblurActive
-        collectionView.reloadData()
+        
+        collectionView.visibleCells
+            .compactMap { $0 as? LikeUserCell }
+            .forEach { $0.setBlurred(!viewModel.isUnblurActive)}
     }
     
     func checkDebugState() {
         let isHidden = !viewModel.canSimulateUpdates
         removeRandomButton.isHidden = isHidden
         insertRandomButton.isHidden = isHidden
+    }
+    
+    func needsMoreContent() -> Bool {
+        collectionView.layoutIfNeeded()
+        return collectionView.contentSize.height <= collectionView.bounds.height
     }
 }
 
@@ -81,13 +94,22 @@ private extension LikesViewController {
     func bindViewModel() {
         viewModel.onItemsUpdated = { [weak self] in
             DispatchQueue.runOnMain {
-                self?.syncBlurState()
+                guard let self else { return }
+                
+                self.syncBlurState()
+                
+                self.applySnapshot()
+                
+                if self.needsMoreContent() {
+                    self.viewModel.loadNext()
+                }
             }
         }
         
         viewModel.onTimerTick = { [weak self] remainingTime in
             DispatchQueue.runOnMain {
                 self?.timerLabel.text = remainingTime.toMinuteSecondString
+                self?.syncBlurState()
             }
         }
         
@@ -96,19 +118,79 @@ private extension LikesViewController {
                 self?.syncBlurState()
             }
         }
+        
+        viewModel.onMatch = { [weak self] item in
+            DispatchQueue.runOnMain {
+                let alert = UIAlertController(
+                    title: "It's a match!",
+                    message: "You and \(item.user.name) liked each other",
+                    preferredStyle: .alert
+                )
+
+                alert.addAction(UIAlertAction(title: "OK", style: .default))
+                self?.present(alert, animated: true)
+            }
+        }
     }
 }
 
 // MARK: Collection View setup
 private extension LikesViewController {
     func setupCollectionView() {
-        collectionView.dataSource = self
         collectionView.delegate = self
-        
-        collectionView.register(
-            UINib(nibName: LikeUserCell.nibName, bundle: nil),
-            forCellWithReuseIdentifier: LikeUserCell.reuseIdentifier
-        )
+    }
+    
+    func registerCell() {
+        cellRegistration = UICollectionView.CellRegistration<LikeUserCell, String>(
+            cellNib: UINib(nibName: LikeUserCell.nibName, bundle: nil)
+        ) { [weak self] cell, indexPath, itemID in
+            
+            guard let self else { return }
+            
+            let item = self.viewModel.item(by: itemID)
+
+            cell.configure(
+                user: item.user,
+                isBlurred: !self.viewModel.isUnblurActive
+            )
+
+            cell.onLikeTapped = { [weak self] in
+                self?.viewModel.like(item: item)
+            }
+
+            cell.onSkipTapped = { [weak self] in
+                self?.viewModel.skip(item: item)
+            }
+        }
+    }
+}
+
+// MARK: Collection View DataSource
+private extension LikesViewController {
+    func setupDataSource() {
+        dataSource = UICollectionViewDiffableDataSource<Int, String>(
+            collectionView: collectionView
+        ) { [weak self]
+            (collectionView: UICollectionView,
+             indexPath: IndexPath,
+             itemID: String) -> UICollectionViewCell in
+            
+            guard let self else { return UICollectionViewCell() }
+            
+            return collectionView.dequeueConfiguredReusableCell(
+                using: self.cellRegistration,
+                for: indexPath,
+                item: itemID
+            )
+        }
+    }
+    
+    private func applySnapshot(animated: Bool = true) {
+        var snapshot = NSDiffableDataSourceSnapshot<Int, String>()
+        snapshot.appendSections([0])
+        snapshot.appendItems(viewModel.items.map(\.id))
+
+        dataSource.apply(snapshot, animatingDifferences: animated)
     }
 }
 
@@ -171,7 +253,20 @@ extension LikesViewController: UICollectionViewDataSource {
         let item = viewModel.item(at: indexPath.item)
         cell.configure(user: item.user, isBlurred: !viewModel.isUnblurActive)
         
+        cell.onLikeTapped = { [weak self] in
+            self?.viewModel.like(item: item)
+        }
+        
+        cell.onSkipTapped = { [weak self] in
+            self?.viewModel.skip(item: item)
+        }
+        
         return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        guard let cell = cell as? LikeUserCell else { return }
+        cell.setBlurred(!viewModel.isUnblurActive)
     }
 }
 
